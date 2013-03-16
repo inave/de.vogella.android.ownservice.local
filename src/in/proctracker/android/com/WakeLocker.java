@@ -1,4 +1,4 @@
-package de.vogella.android.ownservice.local;
+package in.proctracker.android.com;
 
 import android.content.Context;
 import android.os.PowerManager;

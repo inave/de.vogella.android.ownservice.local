@@ -1,18 +1,19 @@
-package de.vogella.android.ownservice.local;
+package in.proctracker.android.com;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -27,7 +28,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 public class MainActivity extends ListActivity {
-  private static final Logentry Logentry = null;
 private LocalWordService s;
   private MyScheduleReceiver thereciever = new MyScheduleReceiver() ;
   
@@ -90,7 +90,8 @@ private LocalWordService s;
 	        String[] split;
 //	        ArrayList<Logentry> log = new ArrayList<Logentry>();
 	        Map<String, Appstat> stat = new HashMap<String, Appstat>();
-	        
+			int f = 0;
+
 	        wordList.clear();
 	        while ((receiveString = fr.readLine()) != null)
 	        {
@@ -120,14 +121,36 @@ private LocalWordService s;
 	        		{
 	        			//Add time to existing entry
 	        			tmpstat.playtime += entry.length;
-	        			stat.put(tmpstat.apppackage, tmpstat);
+	        			stat.put(tmpstat.apppackage, tmpstat);	        			
 	        		}
 	        		
 	        	}	        	
 	        }
+	        
 	        fr.close();
-
+	        Appstat statEntries[] = new Appstat[stat.size()];
+	        int ii = 0;
+	        
+	        for (Appstat value : stat.values()) 
+	        {
+	        	statEntries[ii] = value;
+	        	ii++;
+	        }
+	        Arrays.sort(statEntries);
+	        
             String line = new String();
+	        for(int iii=0; iii<statEntries.length; iii++)
+	        {
+	        	long h = statEntries[iii].playtime/3600;
+	        	long m = statEntries[iii].playtime/60 - h*60;
+	        	long s = statEntries[iii].playtime - h*3600 - m*60;
+	        	
+	            line = String.format("%s - %d:%d:%d", statEntries[iii].applabel, h, m, s);
+	        	wordList.add(line);
+	        	
+	        }
+            
+	        /*	
 	        for (Appstat value : stat.values()) 
 	        {
 	        	long h = value.playtime/3600;
@@ -138,6 +161,7 @@ private LocalWordService s;
 	            line = String.format("%s - %d:%d:%d", value.applabel, h, m, s);
 	        	wordList.add(line);
             }
+            */
         	adapter.notifyDataSetChanged();
     	}
     	catch (IOException e)
@@ -150,7 +174,7 @@ public Date getParseTime(String t)
   {
 	Date date1 = null;
 	
-  	SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss aa"); 
+  	SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss aa"); 
   	try
   	{
   		date1 = dateFormat.parse(t);
@@ -164,18 +188,24 @@ public Date getParseTime(String t)
   }
 } 
 
-class Logentry
+class Logentry 
 {
 	String applabel;
 	String apppackage;
 	Date start;
 	Date end;
 	long length;
+	
 }
 
-class Appstat
+class Appstat implements Comparable<Appstat>
 {
 	String applabel;
 	String apppackage;
 	long playtime;
+
+	public int compareTo(Appstat compareAppstat) 
+	{
+		return (int)(compareAppstat.playtime - this.playtime);
+	}
 }

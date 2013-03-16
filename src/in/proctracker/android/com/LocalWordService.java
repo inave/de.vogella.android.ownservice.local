@@ -1,4 +1,4 @@
-package de.vogella.android.ownservice.local;
+package in.proctracker.android.com;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -114,7 +114,7 @@ public class LocalWordService extends Service {
       String label = (String)pm.getApplicationLabel(appinf);
       Log.d("aaa", "Running Package Name: " + packageName + " - " + label);
       
-      String[] startignoreList = { "com.android.", "system", "de.vogella" };
+      String[] startignoreList = { "com.android.", "system", "in.proctracker" };
       for (int n = 0; n < startignoreList.length; n++)
       {
     	  if( (packageName.startsWith(startignoreList[n])) )

@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package de.vogella.android.ownservice.local;
+package in.proctracker.android.com;
 
 public final class R {
     public static final class attr {
