@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <ImageView
+        android:id="@+id/icon"
+        android:contentDescription="@string/desc"
+        android:layout_width="20sp"
+        android:layout_height="20sp"
+        android:layout_marginLeft="1sp"
+        android:layout_marginRight="10sp"
+        android:layout_marginTop="1sp"
+        android:src="@drawable/icon" >
+    </ImageView>
+    
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@+id/label"
+        android:textSize="20sp" >
+    </TextView>
+
+</LinearLayout> 

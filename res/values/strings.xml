@@ -3,4 +3,6 @@
     <string name="hello">Hello World, ServiceConsumer!</string>
     <string name="app_name">Proc Tracker</string>
     <string name="service_name">My Service</string>
+    <string name="Button">Load</string>
+    <string name="desc">Icon</string>
 </resources>
