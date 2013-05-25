@@ -25,6 +25,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainActivity extends ListActivity {
@@ -32,17 +33,29 @@ private LocalWordService s;
   private MyScheduleReceiver thereciever = new MyScheduleReceiver() ;
   
 /** Called when the activity is first created. */
-
+  public static Appstat statEntries[];
+  //private ArrayAdapter<String> adapter;
+  private MyAdapter adapter;
+  private List<String> wordList;
+  public Appstat[] getStats() {
+	  return statEntries;
+	  }		  
+  
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
     wordList = new ArrayList<String>();
-    adapter = new ArrayAdapter<String>(this,
-        android.R.layout.simple_list_item_1, android.R.id.text1,
-        wordList);
+    adapter = new MyAdapter(this, R.layout.customtext, 
+    		R.id.label, wordList); 
+  //adapter = new ArrayAdapter<String>(this,
+  //R.layout.customtext, R.id.label,
+  //wordList); 
     setListAdapter(adapter);
     doBindService();
+    
+    ListView list = (ListView)findViewById(android.R.id.list);
+    
     
 	IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
 	//filter.addAction(Intent.ACTION_SCREEN_OFF);
@@ -72,14 +85,23 @@ private LocalWordService s;
       s = null;
     }
   };
-  private ArrayAdapter<String> adapter;
-  private List<String> wordList;
 
   void doBindService() {
     bindService(new Intent(this, LocalWordService.class), mConnection,
         Context.BIND_AUTO_CREATE);
   }
-
+  
+  @Override
+  protected void onListItemClick(ListView l, View v, int position, long id) {
+	  Log.d("aaa", "onListItemClick");
+	  if(statEntries != null)
+	  {
+		  Intent LaunchIntent = getPackageManager().getLaunchIntentForPackage(statEntries[position].apppackage);
+		  if(LaunchIntent != null)
+			  startActivity(LaunchIntent);
+	  }
+  }
+  
   public void showServiceData(View view) {
     if (s != null) 
     {
@@ -115,12 +137,14 @@ private LocalWordService s;
 	        			tmpstat.applabel = entry.applabel;
 	        			tmpstat.apppackage = entry.apppackage;
 	        			tmpstat.playtime = entry.length;
+	        			tmpstat.numberoflaunches = 1;
 	        			stat.put(entry.apppackage, tmpstat);
 	        		}
 	        		else
 	        		{
 	        			//Add time to existing entry
 	        			tmpstat.playtime += entry.length;
+	        			tmpstat.numberoflaunches ++;
 	        			stat.put(tmpstat.apppackage, tmpstat);	        			
 	        		}
 	        		
@@ -128,7 +152,10 @@ private LocalWordService s;
 	        }
 	        
 	        fr.close();
-	        Appstat statEntries[] = new Appstat[stat.size()];
+	        //Appstat statEntries[] = new Appstat[stat.size()];
+	        statEntries = null;
+	        statEntries = new Appstat[stat.size()];
+	        
 	        int ii = 0;
 	        
 	        for (Appstat value : stat.values()) 
@@ -203,9 +230,19 @@ class Appstat implements Comparable<Appstat>
 	String applabel;
 	String apppackage;
 	long playtime;
-
+	int numberoflaunches;
+	
+	static boolean sortbytime = false;
+	
 	public int compareTo(Appstat compareAppstat) 
 	{
-		return (int)(compareAppstat.playtime - this.playtime);
+		if (sortbytime)
+		{
+			return (int)(compareAppstat.playtime - this.playtime);
+		}
+		else
+		{
+			return (int)(compareAppstat.numberoflaunches - this.numberoflaunches);
+		}
 	}
 }
